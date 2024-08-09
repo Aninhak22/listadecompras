@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 import '../models/produto.dart';
 
 class BancoDados {
-  static final BancoDados instancia = BancoDados._init();
+  static final BancoDados instance = BancoDados._init();
   static Database? _database;
 
   BancoDados._init();
@@ -14,41 +14,50 @@ class BancoDados {
     return _database!;
   }
 
-  Future<Database> _initDB(String filePath) async {
-    final dbPath = await databaseFactoryFfi.getDatabasesPath();
-    final path = join(dbPath, filePath);
+  Future<Database> _initDB(String caminhoArquivo) async {
+    final caminhoDb = await databaseFactoryFfi.getDatabasesPath();
+    final caminho = join(caminhoDb, caminhoArquivo);
 
     return await databaseFactoryFfi.openDatabase(
-      path,
+      caminho,
       options: OpenDatabaseOptions(
         version: 1,
-        onCreate: _createDB,
+        onCreate: _criarDB,
       ),
     );
   }
 
-  Future _createDB(Database db, int version) async {
-    const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
-    const textType = 'TEXT NOT NULL';
+  Future _criarDB(Database db, int versao) async {
+    const tipoId = 'INTEGER PRIMARY KEY AUTOINCREMENT';
+    const tipoTexto = 'TEXT NOT NULL';
 
     await db.execute('''
 CREATE TABLE produtos ( 
-  id $idType, 
-  nome $textType
+  id $tipoId, 
+  name $tipoTexto
   )
 ''');
   }
 
   Future<void> inserirProduto(Produto produto) async {
-    final db = await instancia.database;
+    final db = await instance.database;
     await db.insert('produtos', produto.toMap());
   }
 
-  Future<List<Produto>> getProdutos() async {
-    final db = await instancia.database;
+  Future<List<Produto>> obterProdutos() async {
+    final db = await instance.database;
 
-    final result = await db.query('produtos');
+    final resultado = await db.query('produtos');
 
-    return result.map((json) => Produto.fromMap(json)).toList();
+    return resultado.map((json) => Produto.fromMap(json)).toList();
   }
+
+  Future<void> excluirProduto(int id) async {
+    final db = await instance.database;
+    await db.delete('produtos', where: 'id = ?', whereArgs: [id]);
+  }
+
+  getProduto() {}
+
+  deleteProduto(int i) {}
 }

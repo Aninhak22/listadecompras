@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
-import '../models/produto.dart'; 
-import '../services/banco_dados.dart'; 
-import '../widgets/produto_lista.dart'; 
+import '../models/produto.dart';
+import '../services/banco_dados.dart';
+import '../widgets/produto_lista.dart';
 
 class TelaInicial extends StatefulWidget {
-  final Key? key;
+  final Key? chave;
 
-  TelaInicial({this.key}) : super(key: key);
+  TelaInicial({this.chave}) : super(key: chave);
 
   @override
-  _TelaInicialState createState() => _TelaInicialState();
+  _TelaInicialEstado createState() => _TelaInicialEstado();
 }
 
-class _TelaInicialState extends State<TelaInicial> {
+class _TelaInicialEstado extends State<TelaInicial> {
   List<Produto> produtos = [];
 
   @override
   void initState() {
     super.initState();
-    _carregarProdutos();
+    _carregarProdutos(); // Carrega os produtos ao iniciar a tela
   }
 
   Future<void> _carregarProdutos() async {
-    final dados = await BancoDados.instancia.getProdutos();
+    final dados = await BancoDados.instance.obterProdutos();
     setState(() {
       produtos = dados;
     });
@@ -30,12 +30,17 @@ class _TelaInicialState extends State<TelaInicial> {
 
   Future<void> _adicionarProduto(String nome) async {
     final novoProduto = Produto(nome: nome);
-    await BancoDados.instancia.inserirProduto(novoProduto);
-    _carregarProdutos();
+    await BancoDados.instance.inserirProduto(novoProduto);
+    _carregarProdutos(); // Recarrega os produtos após adicionar um novo
+  }
+
+  Future<void> _excluirProduto(Produto produto) async {
+    await BancoDados.instance.excluirProduto(produto.id!);
+    _carregarProdutos(); // Recarrega os produtos após excluir
   }
 
   void _mostrarDialogoAdicionarProduto() {
-    final _nameController = TextEditingController();
+    final _controladorNome = TextEditingController();
 
     showDialog(
       context: context,
@@ -43,14 +48,14 @@ class _TelaInicialState extends State<TelaInicial> {
         return AlertDialog(
           title: Text('Adicionar Produto'),
           content: TextField(
-            controller: _nameController,
+            controller: _controladorNome,
             decoration: InputDecoration(hintText: 'Nome do Produto'),
           ),
           actions: <Widget>[
             TextButton(
               child: Text('Cadastrar'),
               onPressed: () {
-                final nome = _nameController.text;
+                final nome = _controladorNome.text;
                 if (nome.isNotEmpty) {
                   _adicionarProduto(nome);
                   Navigator.of(context).pop();
@@ -78,7 +83,14 @@ class _TelaInicialState extends State<TelaInicial> {
         centerTitle: true,
       ),
       body: Center(
-        child: ListaDeProdutos(produtos: produtos),
+        child: produtos.isEmpty
+            ? Text('Nenhum produto cadastrado')
+            : ListaProdutos(
+                produtos: produtos,
+                aoExcluir: (produto) {
+                  _excluirProduto(produto);
+                },
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _mostrarDialogoAdicionarProduto,
@@ -88,4 +100,3 @@ class _TelaInicialState extends State<TelaInicial> {
     );
   }
 }
-

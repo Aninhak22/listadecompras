@@ -6,7 +6,7 @@ void main() {
   sqfliteFfiInit();
   runApp(MeuApp());
 }
-//fiz mais do qe a manha inteira
+
 class MeuApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -19,4 +19,3 @@ class MeuApp extends StatelessWidget {
     );
   }
 }
-
