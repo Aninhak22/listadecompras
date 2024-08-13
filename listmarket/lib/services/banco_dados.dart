@@ -1,3 +1,4 @@
+// banco_dados.dart
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
 import '../models/produto.dart';
@@ -21,8 +22,9 @@ class BancoDados {
     return await databaseFactoryFfi.openDatabase(
       caminho,
       options: OpenDatabaseOptions(
-        version: 1,
+        version: 2, // Atualize a versão do banco de dados
         onCreate: _criarDB,
+        onUpgrade: _atualizarDB,
       ),
     );
   }
@@ -32,11 +34,31 @@ class BancoDados {
     const tipoTexto = 'TEXT NOT NULL';
 
     await db.execute('''
-CREATE TABLE produtos ( 
-  id $tipoId, 
-  name $tipoTexto
-  )
-''');
+      CREATE TABLE produtos (
+        id $tipoId,
+        nome $tipoTexto
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE historico (
+        id $tipoId,
+        nome $tipoTexto,
+        data TEXT NOT NULL
+      )
+    ''');
+  }
+
+  Future _atualizarDB(Database db, int antigo, int novo) async {
+    if (antigo < 2) {
+      await db.execute('''
+        CREATE TABLE historico (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          nome TEXT NOT NULL,
+          data TEXT NOT NULL
+        )
+      ''');
+    }
   }
 
   Future<void> inserirProduto(Produto produto) async {
@@ -46,18 +68,36 @@ CREATE TABLE produtos (
 
   Future<List<Produto>> obterProdutos() async {
     final db = await instance.database;
-
     final resultado = await db.query('produtos');
-
     return resultado.map((json) => Produto.fromMap(json)).toList();
   }
 
   Future<void> excluirProduto(int id) async {
     final db = await instance.database;
+    
+    // Primeiro, obter o produto a ser excluído
+    final produto = await db.query('produtos', where: 'id = ?', whereArgs: [id]);
+    if (produto.isNotEmpty) {
+      // Adicionar o produto à tabela de histórico
+      await db.insert('historico', {
+        'id': produto.first['id'],
+        'nome': produto.first['nome'],
+        'data': DateTime.now().toIso8601String(),
+      });
+    }
+
+    // Em seguida, excluir o produto da tabela principal
     await db.delete('produtos', where: 'id = ?', whereArgs: [id]);
   }
 
-  getProduto() {}
-
-  deleteProduto(int i) {}
+  Future<List<Produto>> obterHistorico(DateTime data) async {
+    final db = await instance.database;
+    final dataFormatada = data.toIso8601String().split('T')[0]; // Apenas a parte da data
+    final resultado = await db.query(
+      'historico',
+      where: 'data LIKE ?',
+      whereArgs: ['$dataFormatada%'],
+    );
+    return resultado.map((json) => Produto.fromMap(json)).toList();
+  }
 }
