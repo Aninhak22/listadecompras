@@ -18,7 +18,7 @@ class _TelaInicialEstado extends State<TelaInicial> {
   @override
   void initState() {
     super.initState();
-    _carregarProdutos(); // Carrega os produtos ao iniciar a tela
+    _carregarProdutos(); 
   }
 
   Future<void> _carregarProdutos() async {
@@ -31,12 +31,12 @@ class _TelaInicialEstado extends State<TelaInicial> {
   Future<void> _adicionarProduto(String nome) async {
     final novoProduto = Produto(nome: nome);
     await BancoDados.instance.inserirProduto(novoProduto);
-    _carregarProdutos(); // Recarrega os produtos após adicionar um novo
+    _carregarProdutos(); 
   }
 
   Future<void> _excluirProduto(Produto produto) async {
     await BancoDados.instance.excluirProduto(produto.id!);
-    _carregarProdutos(); // Recarrega os produtos após excluir
+    _carregarProdutos(); 
   }
 
   void _mostrarDialogoAdicionarProduto() {
@@ -81,6 +81,33 @@ class _TelaInicialEstado extends State<TelaInicial> {
           ],
         ),
         centerTitle: true,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.history),
+              title: Text('Consultar histórico'),
+              onTap: () {
+                Navigator.of(context).pop(); 
+                Navigator.of(context).pushNamed('/historico'); 
+              },
+            ),
+          ],
+        ),
       ),
       body: Center(
         child: produtos.isEmpty

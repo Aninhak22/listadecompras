@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:listmarket/screens/historico.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'screens/tela_inicial.dart';
 
@@ -16,6 +17,9 @@ class MeuApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: TelaInicial(),
+      routes: {
+        '/historico': (context) => TelaHistorico(),
+      },
     );
   }
 }
