@@ -1,4 +1,3 @@
-// banco_dados.dart
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
 import '../models/produto.dart';
@@ -22,7 +21,7 @@ class BancoDados {
     return await databaseFactoryFfi.openDatabase(
       caminho,
       options: OpenDatabaseOptions(
-        version: 2, // Atualize a versão do banco de dados
+        version: 2, 
         onCreate: _criarDB,
         onUpgrade: _atualizarDB,
       ),
@@ -75,10 +74,10 @@ class BancoDados {
   Future<void> excluirProduto(int id) async {
     final db = await instance.database;
     
-    // Primeiro, obter o produto a ser excluído
+
     final produto = await db.query('produtos', where: 'id = ?', whereArgs: [id]);
     if (produto.isNotEmpty) {
-      // Adicionar o produto à tabela de histórico
+     
       await db.insert('historico', {
         'id': produto.first['id'],
         'nome': produto.first['nome'],
@@ -86,13 +85,13 @@ class BancoDados {
       });
     }
 
-    // Em seguida, excluir o produto da tabela principal
+    
     await db.delete('produtos', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<List<Produto>> obterHistorico(DateTime data) async {
     final db = await instance.database;
-    final dataFormatada = data.toIso8601String().split('T')[0]; // Apenas a parte da data
+    final dataFormatada = data.toIso8601String().split('T')[0]; 
     final resultado = await db.query(
       'historico',
       where: 'data LIKE ?',

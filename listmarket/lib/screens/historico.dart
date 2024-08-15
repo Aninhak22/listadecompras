@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/produto.dart';
 import '../services/banco_dados.dart';
+import '../models/produto.dart';
 
 class TelaHistorico extends StatefulWidget {
   @override
@@ -46,6 +46,7 @@ class _TelaHistoricoEstado extends State<TelaHistorico> {
       appBar: AppBar(
         title: Text('Histórico'),
         centerTitle: true,
+        backgroundColor: Color.fromARGB(255, 243, 248, 255), 
         actions: [
           IconButton(
             icon: Icon(Icons.calendar_today),
@@ -53,16 +54,33 @@ class _TelaHistoricoEstado extends State<TelaHistorico> {
           ),
         ],
       ),
-      body: Center(
-        child: _historico.isEmpty
-            ? Text('Nenhum histórico para a data selecionada.')
-            : ListView(
-                children: _historico.map((produto) {
-                  return ListTile(
-                    title: Text(produto.nome),
-                  );
-                }).toList(),
-              ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Os itens excluídos são:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Expanded(
+              child: _historico.isEmpty
+                  ? Text('Nenhum histórico para a data selecionada.')
+                  : ListView.builder(
+                      itemCount: _historico.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          color: index % 2 == 0 ? Color.fromARGB(255, 241, 210, 250) : Colors.white, 
+                          child: ListTile(
+                            title: Text(_historico[index].nome),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

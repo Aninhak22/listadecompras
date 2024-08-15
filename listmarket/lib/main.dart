@@ -20,6 +20,7 @@ class MeuApp extends StatelessWidget {
       routes: {
         '/historico': (context) => TelaHistorico(),
       },
+      debugShowCheckedModeBanner: false
     );
   }
 }

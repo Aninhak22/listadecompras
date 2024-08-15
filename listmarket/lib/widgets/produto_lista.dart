@@ -19,16 +19,19 @@ class ListaProdutos extends StatelessWidget {
         produtos.insert(indiceNovo, item);
       },
       children: [
-        for (final produto in produtos)
+        for (int i = 0; i < produtos.length; i++)
           Dismissible(
-            key: ValueKey(produto.id),
+            key: ValueKey(produtos[i].id),
             background: Container(color: Colors.red, child: Icon(Icons.delete, color: Colors.white)),
             direction: DismissDirection.endToStart,
             onDismissed: (direction) {
-              aoExcluir(produto);
+              aoExcluir(produtos[i]);
             },
-            child: ListTile(
-              title: Text(produto.nome),
+            child: Container(
+              color: i % 2 == 0 ? Color.fromARGB(255, 241, 210, 250) : Colors.white,
+              child: ListTile(
+                title: Text(produtos[i].nome),
+              ),
             ),
           ),
       ],

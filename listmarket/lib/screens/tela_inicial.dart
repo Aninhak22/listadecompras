@@ -1,4 +1,3 @@
-// tela_inicial.dart
 import 'package:flutter/material.dart';
 import '../models/produto.dart';
 import '../services/banco_dados.dart';
@@ -19,7 +18,7 @@ class _TelaInicialEstado extends State<TelaInicial> {
   @override
   void initState() {
     super.initState();
-    _carregarProdutos(); // Carrega os produtos ao iniciar a tela
+    _carregarProdutos(); 
   }
 
   Future<void> _carregarProdutos() async {
@@ -32,12 +31,12 @@ class _TelaInicialEstado extends State<TelaInicial> {
   Future<void> _adicionarProduto(String nome) async {
     final novoProduto = Produto(nome: nome);
     await BancoDados.instance.inserirProduto(novoProduto);
-    _carregarProdutos(); // Recarrega os produtos após adicionar um novo
+    _carregarProdutos(); 
   }
 
   Future<void> _excluirProduto(Produto produto) async {
     await BancoDados.instance.excluirProduto(produto.id!);
-    _carregarProdutos(); // Recarrega os produtos após excluir
+    _carregarProdutos(); 
   }
 
   void _mostrarDialogoAdicionarProduto() {
@@ -82,6 +81,7 @@ class _TelaInicialEstado extends State<TelaInicial> {
           ],
         ),
         centerTitle: true,
+        backgroundColor: Color.fromARGB(255, 243, 248, 255), 
       ),
       drawer: Drawer(
         child: ListView(
@@ -103,8 +103,8 @@ class _TelaInicialEstado extends State<TelaInicial> {
               leading: Icon(Icons.history),
               title: Text('Consultar histórico'),
               onTap: () {
-                Navigator.of(context).pop(); // Fecha o menu lateral
-                Navigator.of(context).pushNamed('/historico'); // Navega para a tela de histórico
+                Navigator.of(context).pop(); 
+                Navigator.of(context).pushNamed('/historico'); 
               },
             ),
           ],
