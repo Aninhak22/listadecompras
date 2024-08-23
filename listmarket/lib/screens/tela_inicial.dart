@@ -110,15 +110,30 @@ class _TelaInicialEstado extends State<TelaInicial> {
           ],
         ),
       ),
-      body: Center(
-        child: produtos.isEmpty
-            ? Text('Nenhum produto cadastrado')
-            : ListaProdutos(
-                produtos: produtos,
-                aoExcluir: (produto) {
-                  _excluirProduto(produto);
-                },
-              ),
+      body: FutureBuilder<List<Produto>>(
+        future: BancoDados.instance.obterProdutos(),
+        builder: (BuildContext context, AsyncSnapshot<List<Produto>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Erro ao carregar produtos'), 
+            );
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+              child: Text('Nenhum produto cadastrado'), 
+            );
+          } else {
+            return ListaProdutos(
+              produtos: snapshot.data!,
+              aoExcluir: (produto) {
+                _excluirProduto(produto);
+              },
+            );
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _mostrarDialogoAdicionarProduto,
