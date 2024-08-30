@@ -89,7 +89,7 @@ class _TelaInicialEstado extends State<TelaInicial> {
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.pink,
               ),
               child: Text(
                 'Menu',

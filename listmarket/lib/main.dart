@@ -3,6 +3,7 @@ import 'package:listmarket/screens/historico.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'screens/tela_inicial.dart';
 import 'package:sqflite/sqflite.dart'; 
+import 'package:sqlite3/sqlite3.dart';
 import 'dart:io'; 
 
 // void main() {
@@ -11,11 +12,14 @@ import 'dart:io';
 // }
 
 void main() async {
-  if (Platform.isWindows || Platform.isAndroid) {
-    sqfliteFfiInit();
-    runApp(MeuApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (Platform.isWindows || Platform.isLinux) {
+    sqfliteFfiInit();  
   }
   databaseFactory = databaseFactoryFfi;
+
+  runApp(MeuApp());
 }
 
 class MeuApp extends StatelessWidget {
